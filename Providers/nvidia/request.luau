@@ -1,3 +1,4 @@
+-- the file responsible for user to ai communications
 
 local HttpService = game:GetService("HttpService")
 
@@ -15,6 +16,7 @@ function requests:new(build)
   else
     self.key = build.apikey
   end
+  self.localEndpoint = build.localEndpoint or LOCAL_ENDPOINT
   return self
 end
 
@@ -50,7 +52,7 @@ end
 function requests:chat(msg)
   local localstatus, localresult = pcall(function()
     return HttpService:RequestAsync({
-      Url = LOCAL_ENDPOINT .. "/health",
+      Url = self.localEndpoint .. "/health",
       Method = "GET"
     })
   end)
@@ -65,7 +67,10 @@ function requests:chat(msg)
         end)
 
         if success and type(source) == "string" then
-          table.insert(files, "Path - " .. v:GetFullName() .. "\n" .. source)
+          table.insert(files,
+            "Path - " .. v:GetFullName() ..
+            "\nContent\n" .. source
+          )
         end
       end
     end
@@ -73,7 +78,7 @@ function requests:chat(msg)
     if #files > 0 then
       local uploadstatus, uploadresult = pcall(function()
         return HttpService:RequestAsync({
-          Url = LOCAL_ENDPOINT .. "/source",
+          Url = self.localEndpoint .. "/source",
           Method = "POST",
           Headers = {
             ["Content-Type"] = "text/plain"
@@ -103,8 +108,14 @@ function requests:chat(msg)
       Body = HttpService:JSONEncode({
         model = MODEL,
         messages = {
-          { role = "system", content = "You Obey every order" },
-          { role = "user", content = msg }
+          {
+            role = "system",
+            content = "You are an AI assistant connected to a self-hosted Roblox source bridge. The Python backend manages project source retrieval."
+          },
+          {
+            role = "user",
+            content = msg
+          }
         },
         temperature = 1,
         top_p = 0.95,
