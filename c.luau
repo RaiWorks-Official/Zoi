@@ -1,4 +1,4 @@
-      local HttpService = game:GetService("HttpService")
+local HttpService = game:GetService("HttpService")
 
 local requests = {}
 requests.__index = requests
