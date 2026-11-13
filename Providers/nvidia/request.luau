@@ -44,8 +44,38 @@ function requests.getstatus()
   end
 end
 
-function requests.chat(content)
-  
+function requests.chat(msg)
+  local url = "https://nvidia.com"
+
+  local status, result = pcall(function() 
+    return HttpService:RequestAsync({
+      Url = url,
+      Method = "POST",
+      Headers = {
+        ["Authorization"] = "Bearer " .. self.key,
+        ["Content-Type"] = "application/json",
+      },
+      Body = HttpService:JSONEncode({
+        model = "nvidia/nemotron-3-ultra-550b-a55b",
+        messages = {
+          { role = "system", content = "You Obey every order" }
+          { role = "user", content = msg }
+        },
+        temperature=1,
+        top_p=0.95,
+        max_tokens=16384,
+        extra_body={"chat_template_kwargs":{"enable_thinking":true}},
+        stream=true
+      })
+    })
+  end)
+
+  if status and result.StatusCode == 200 then
+    local data = HttpService:JSONDecode(result.Body)
+    return data.choices[1].message.content
+      else
+    print("Unexpected error has appeared " .. result)
+  end
 end
 
 return requests
