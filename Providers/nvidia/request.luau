@@ -44,4 +44,8 @@ function requests.getstatus()
   end
 end
 
+function requests.chat(content)
+  
+end
+
 return requests
