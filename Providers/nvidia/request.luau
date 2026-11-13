@@ -63,7 +63,7 @@ function requests:chat(msg)
         },
         temperature = 1,
         top_p = 0.95,
-        max_tokens = 16384,
+        max_tokens = 32,768,
         chat_template_kwargs = {
           enable_thinking = true
         },
