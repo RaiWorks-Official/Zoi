@@ -1,4 +1,4 @@
--- this file is responsible for connecting to nvidia and its ai
+
 local request = require("request")
 
 local nv = {}
@@ -7,7 +7,8 @@ nv.__index = nv
 function nv:init(ins)
   local self = setmetatable({}, nv)
   self.req = request:new({
-    apikey = ins.apikey
+    apikey = ins.apikey,
+    localEndpoint = ins.localEndpoint
   })
   return self
 end
